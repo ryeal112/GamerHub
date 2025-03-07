@@ -4,16 +4,21 @@ import { collection, addDoc, runTransaction, doc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useCouponStore } from './coupons'
 import { getCurrentDate } from '../helpers'
+import { useRoute } from 'vue-router'
 
 
 export const useCartStore = defineStore('cart', () => {
 
+    const route = useRoute()
     const coupon = useCouponStore()
     const db = useFirestore()
 
     const items = ref([])
     const subtotal = ref(0)
     const total = ref(0)
+
+    let nombreUsuario = ref('');
+    let apellidoUsuario = ref('');
 
     const MAX_PRODUCTS = 5
     const TAX_RATE = .10
@@ -30,7 +35,6 @@ export const useCartStore = defineStore('cart', () => {
                 alert('Has alcanzado el limite')
                 return
             } 
-            // Actualizar la cantidad
             items.value[index].quantity++
         } else {
             items.value.push({...item, quantity: 1, id: item.id})
@@ -51,14 +55,14 @@ export const useCartStore = defineStore('cart', () => {
                 items: items.value.map(item => {
                     const { availability, category, ...data } = item
                     return data
-                }),
+                }), 
+                userId: route.params.id,
                 subtotal: subtotal.value,
                 discount: coupon.discount,
                 total: total.value,
                 date: getCurrentDate()
             })
 
-            // Sustraer la cantidad de lo disponible
             items.value.forEach( async (item) => {
                 const productRef = doc(db, 'products', item.id)
                 await runTransaction(db, async (transaction) => {
@@ -68,7 +72,6 @@ export const useCartStore = defineStore('cart', () => {
                 })
             })
 
-            // Reiniciar el state
             $reset()
             coupon.$reset()
 
@@ -99,6 +102,8 @@ export const useCartStore = defineStore('cart', () => {
         items,
         subtotal,
         total,
+        nombreUsuario,
+        apellidoUsuario,
         addItem,
         updateQuantity,
         removeItem,

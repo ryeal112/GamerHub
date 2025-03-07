@@ -4,6 +4,7 @@ import { useFirebaseAuth } from 'vuefire'
 import ShopView from '@/views/ShopView.vue'
 import AdminLayout from '@/views/admin/AdminLayout.vue'
 import LoginAdminView from '@/views/LoginAdminView.vue'
+import RegisterView from '@/views/RegisterView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,6 +12,16 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      component: ShopView,
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
+    },
+    {
+      path: '/:id',
+      name: 'user',
       component: ShopView,
     },
     {
@@ -49,11 +60,9 @@ const router = createRouter({
   ],
 })
 
-// Guard de navegación
 router.beforeEach(async (to, from, next) => {
   const requiresAuth = to.matched.some(url => url.meta.requiresAuth)
   if(requiresAuth) {
-    // Comprobar que el usuario este autenticado
     try {
       await authenticateUser()
       next()
@@ -62,7 +71,6 @@ router.beforeEach(async (to, from, next) => {
       next({name: 'login'})
     }
   } else {
-    // No esta protegido, mostramos la vista
     next()
   }
 })

@@ -1,9 +1,11 @@
 <script setup>
     import {reactive} from 'vue'
     import {useAuthStore} from '@/stores/authAdmin'
+    import { useUsersStore } from '@/stores/users'
     import MainNav from '@/components/MainNav.vue'
 
     const auth = useAuthStore()
+    const user = useUsersStore()
 
     const formData = reactive({
         correoAdmin: '',
@@ -13,7 +15,23 @@
     const submitHadler = async () => {
         const {correoAdmin, contraseniaAdmin} = formData;
 
-        auth.login({email:correoAdmin, password: contraseniaAdmin})
+        try {
+        const userLoginResult = await user.login({ email: correoAdmin, password: contraseniaAdmin });
+
+        if (userLoginResult) {
+            console.log("Inicio de sesión con user exitoso");
+            return;
+        }
+    } catch (error) {
+        console.log("Error con user.login:", error);
+    }
+
+    try {
+        const authLoginResult = await auth.login({ email: correoAdmin, password: contraseniaAdmin });
+        console.log("Inicio de sesión con auth exitoso");
+    } catch (error) {
+        console.log("Error con auth.login:", error);
+    }
     }
 </script>
 
@@ -22,7 +40,7 @@
 
     <div class="pt-32 flex justify-center bg-white shadow">
             <div class="mt-10 p-10 pt-2 w-full 2xl:w-2/4">
-            <h1 class="text-2xl font-black">Inicio de Sesión de Administrador</h1>
+            <h1 class="text-2xl font-black">Inicio de Sesión</h1>
             <nav class="my-5">
                 <RouterLink
                     :to="{name: 'home'}"
@@ -36,7 +54,7 @@
             </div>
                 <FormKit
                     type="form"
-                    submit-label="Inicio sesión administrador"
+                    submit-label="Inicio sesión"
                     incomplete-message="No se pudo enviar, revisa los mensajes"
                     @submit="submitHadler"
                     :value="formData"
@@ -45,19 +63,19 @@
                         type="email"
                         label="Correo"
                         name="correoAdmin"
-                        placeholder="Correo del administrador"
+                        placeholder="Correo del usuario"
                         validation="required"
-                        :validation-messages="{required: 'El Correo del Administrador es Obligatorio'}"
+                        :validation-messages="{required: 'El Correo del Usuario es Obligatorio'}"
                         v-model.trim="formData.correoAdmin"
                     />
 
                     <FormKit
-                        type="text"
+                        type="password"
                         label="Contraseña"
                         name="contraseniaAdmin"
-                        placeholder="Contraseña del administrador"
+                        placeholder="Contraseña del usuario"
                         validation="required"
-                        :validation-messages="{required: 'La Contraseña del Administrador es Obligatorio'}"
+                        :validation-messages="{required: 'La Contraseña del Usuario es Obligatorio'}"
                         v-model.trim="formData.contraseniaAdmin"
                     />
 

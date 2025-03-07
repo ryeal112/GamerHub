@@ -1,7 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { defineStore } from 'pinia'
 import { useFirebaseAuth } from 'vuefire'
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
 import { useRouter } from 'vue-router'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -30,11 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
             .then( (userCredential) => {
                 const user = userCredential.user
                 authUser.value = user
-                if(email === "correo\@correo.com" && password == "123456"){
-                    router.push({name: 'products'})
-                }else{
-                    router.push({name: 'home'})
-                }     
+                router.push({name: 'products'})
             })
             .catch(error => {
                 console.log(error)

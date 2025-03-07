@@ -1,17 +1,34 @@
 <script setup>
+    import { ref, watchEffect, defineProps } from 'vue';
     import { formatCurrency } from '../helpers';
     import Amount from './Amount.vue';
+    import { useUsersStore } from '@/stores/users';
 
-    defineProps({
+    const userStore = useUsersStore();
+    const userData = ref(null);
+
+    const props = defineProps({
         sale: {
             type: Object
         }
     })
+
+    watchEffect(async () => {
+    if (props.sale?.userId) {
+        userData.value = await userStore.getUserData(props.sale.userId);
+        console.log("Datos de usuario cargados:", userData.value);
+    }
+});
+
 </script>
 
 <template>
     <div class="border-t border-gray-200 space-y-6 py-6">
         <h2 class="text-2xl font-black">Detalles Venta:</h2>
+        <p v-if="userData" class="text-xl font-black text-gray-500">Usuario: {{ userData.nombre }}</p>
+        <p v-if="userData" class="text-xl font-black text-gray-500">Correo: {{ userData.correo }}</p>
+        <p v-if="userData" class="text-xl font-black text-gray-500">Dirección: {{ userData.direccion }}</p>
+        <p v-if="userData" class="text-xl font-black text-gray-500">Teléfono: {{ userData.telefono }}</p>
         <p class="text-xl font-black text-gray-500">Fecha de compra: {{ sale.date }}</p>
         <p class="text-xl font-black text-gray-500">Productos Vendidos</p>
 

@@ -37,6 +37,18 @@
         <nav
             class="mt-5"
         >
+            <RouterLink
+                :to="{name: 'home'}"
+                class="rounded text-white font-bold p-2"
+            >
+                Cerrar sesion
+            </RouterLink>
+            <RouterLink
+                :to="{name: 'register'}"
+                class="rounded text-white font-bold p-2"
+            >
+                Registro
+            </RouterLink>
             <Link
                 to="loginAdmin"
             >

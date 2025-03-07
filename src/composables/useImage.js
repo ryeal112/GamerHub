@@ -13,14 +13,12 @@ export default function useImage() {
         const filename = uid() + '.jpg'
         const sRef = storageRef(storage, '/products/' + filename)
 
-        // Sube el archivo
         const uploadTask = uploadBytesResumable(sRef, file)
 
         uploadTask.on('state_changed', 
             () => {},
             (error) => console.log(error),
             () => {
-                // Upload is complete
                 getDownloadURL(uploadTask.snapshot.ref) 
                     .then( (downloadURL) => {
                         url.value = downloadURL
